@@ -11,8 +11,10 @@ for idx = 1 : 22
 
     % if idx == 7, showLabeledImage(cleanedImage, label); end
 
-    enhancedImage = adapthisteq(cleanedImage, "NumTiles", [8 8], 'ClipLimit', 0.01);
+    enhancedImage = clahe(cleanedImage);
+    
+    binaryImage = preprocessing(enhancedImage);
 
-    % if idx == 7, showLabeledImage(enhancedImage, label); end
+    % if idx == 7, showLabeledImage(binaryImage, label); end
     
 end

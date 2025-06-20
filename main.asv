@@ -1,10 +1,28 @@
 addpath('functions')
 
+params.threshold = 15;
+
 for idx = 1 : 22
     [grayImage, label] = readImage(idx);
     
-    if idx == 7, showLabeledImage(grayImage, label); end
+    % if idx == 7, showLabeledImage(grayImage, label); end
+
+    cleanedImage = cleanImage(grayImage, params.threshold);
+
+    % if idx == 7, showLabeledImage(cleanedImage, label); end
     
+    backgroundMask = cleanedImage == 0;
+    enhancedImage = adapthisteq(cleanedImage, "NumTiles", [8 8], 'ClipLimit', 0.01);
+    enhancedImage(backgroundMask) = 0;
+
+    % if idx == 7, showLabeledImage(enhancedImage, label); end
+
+    % if idx == 7, imshow(backgroundMask); end
+
+    otsuThreshold = graythresh(enhancedImage(~backgroundMask));
+    binaryImage = imbinarize(enhancedImage, otsuThreshold);
     
 
+    if idx == 7, showLabeledImage(binaryImage, label); end
+    
 end
