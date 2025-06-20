@@ -1,7 +1,7 @@
 addpath('functions')
 
-[imagesPath, labelsPath] = getPaths();
-
-% fprintf('The path of images folder is %s\n', imagesPath);
-% fprintf('The path of labels folder is %s\n', labelsPath);
-
+for idx = 1 : 22
+    [grayImage, label] = readImage(idx);
+    
+    % if idx == 7, showLabeledImage(grayImage, label); end
+end
