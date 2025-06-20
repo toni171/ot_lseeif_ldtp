@@ -1,28 +1,91 @@
 addpath('functions')
 
 params.threshold = 15;
+params.sigma = 1.5;
+params.epsilon = 1.5;
+params.dt = 1;
+params.mu = 0.1;
+params.lambda = 1.5;
+params.alpha = 0;
+params.minArea = 500;
 
-for idx = 1 : 22
-    [grayImage, label] = readImage(idx);
+for mu = 0.05 : 0.05 : 0.2
+    params.mu = mu;
+    fprintf("Mu %0.2f\n", mu)
+    sum = 0;
+
+    for idx = 1 : 10
+        [grayImage, label] = readImage(idx);
+        
+        % if idx == 7, showLabeledImage(grayImage, label); end
     
-    % if idx == 7, showLabeledImage(grayImage, label); end
-
-    cleanedImage = cleanImage(grayImage, params.threshold);
-
-    % if idx == 7, showLabeledImage(cleanedImage, label); end
+        cleanedImage = cleanImage(grayImage, params.threshold);
     
-    backgroundMask = cleanedImage == 0;
-    enhancedImage = adapthisteq(cleanedImage, "NumTiles", [8 8], 'ClipLimit', 0.01);
-    enhancedImage(backgroundMask) = 0;
-
-    % if idx == 7, showLabeledImage(enhancedImage, label); end
-
-    % if idx == 7, imshow(backgroundMask); end
-
-    otsuThreshold = graythresh(enhancedImage(~backgroundMask));
-    binaryImage = imbinarize(enhancedImage, otsuThreshold);
+        % if idx == 7, showLabeledImage(cleanedImage, label); end
     
-
-    if idx == 7, showLabeledImage(binaryImage, label); end
+        enhancedImage = clahe(cleanedImage);
     
+        % if idx == 1, showLabeledImage(cleanedImage, label); end
+        
+        binaryImage = otsuThresholding(enhancedImage);
+    
+        % if idx == 7, showLabeledImage(binaryImage, label); end
+    
+        % seErode = strel('disk', 6);
+        % binaryImage = ~binaryImage;
+        % binaryImage = imdilate(binaryImage, seErode);
+        % binaryImage = ~binaryImage;
+        % if idx == 7, showLabeledImage(binaryImage, label); end
+    
+        segmentedMask = segmentImage(enhancedImage, binaryImage, params);
+    
+        % if idx == 11, showLabeledImage(segmentedMask, label); end
+    
+        segmentedMask = ~segmentedMask;
+        segmentedMask = ~bwareaopen(segmentedMask, params.minArea);
+    
+        seErode = strel('disk', 3);
+        segmentedMask = imerode(segmentedMask, seErode);
+    
+        % if idx == 11, showLabeledImage(segmentedMask, label); end
+    
+        ccCore = bwconncomp(segmentedMask);
+        stats   = regionprops(ccCore,'Area','Perimeter');
+        areas   = [stats.Area];
+        perims  = [stats.Perimeter];
+        circ    = 4*pi*areas./(perims.^2 + eps);
+    
+        valid   = find(areas >= params.minArea);
+        if isempty(valid), valid = 1:numel(areas); end
+    
+        [~,loc]  = max(circ(valid));
+        coreIdx  = valid(loc);
+    
+        coreMask = false(size(segmentedMask));
+        coreMask(ccCore.PixelIdxList{coreIdx}) = true;
+    
+        seDilate = strel('disk', 5);
+        finalMask = imdilate(coreMask, seDilate);
+    
+        % if idx == 11, showLabeledImage(finalMask, label); end
+    
+        [B, ~] = bwboundaries(finalMask, 'noholes');
+    
+        % if idx == 11, showSegmentation(grayImage, label, B); end
+    
+        [sumD, meanD, hausD] = evaluateSegmentation(label, B);
+        fprintf("L'immagine %d ha Directed Hausdorff %0.2f\n", idx, hausD)
+        sum = sum + hausD;
+    end
+
+    if mu == 0.05
+        bestMu = 1;
+        bestSum = sum;
+        if sum < bestSum
+           bestMu = mu;
+           bestSum = sum;
+        end
+    end
 end
+
+fprintf("Mu migliore è %0.2f\n", bestMu)
