@@ -1,0 +1,10 @@
+addpath('functions')
+
+for idx = 1 : 22
+    [grayImage, label] = readImage(idx);
+    
+    if idx == 7, showLabeledImage(grayImage, label); end
+    
+    
+
+end
