@@ -11,11 +11,11 @@ params.minArea = 500;
 params.iteration = 20;
 params.numTiles = 8;
 
-for iteration = 1 : 1
-     fprintf("%0.2f\n", iteration)
-     sum = 0;
+% for iteration = 1 : 1
+%      fprintf("%0.2f\n", iteration)
+%      sum = 0;
 
-    for idx = 1 : 10
+    for idx = 1 : 435
         [grayImage, label] = readImage(idx);
         
         % if idx == 1, showLabeledImage(grayImage, label); end
@@ -26,13 +26,13 @@ for iteration = 1 : 1
     
         enhancedImage = clahe(cleanedImage, params.numTiles);
     
-        if idx == 3, showLabeledImage(cleanedImage, label); end
+        % if idx == 3, showLabeledImage(cleanedImage, label); end
         
         binaryImage = otsuThresholding(enhancedImage);
 
         % binaryImage = bwareaopen(binaryImage, 10);
     
-        if idx == 3, showLabeledImage(binaryImage, label); end
+        % if idx == 3, showLabeledImage(binaryImage, label); end
     
         % seErode = strel('disk', iteration);
         % binaryImage = ~binaryImage;
@@ -54,22 +54,9 @@ for iteration = 1 : 1
         segmentedMask = imerode(segmentedMask, seErode);
         
     
-        if idx == 3, showLabeledImage(segmentedMask, label); end
+        % if idx == 3, showLabeledImage(segmentedMask, label); end
     
-        ccCore = bwconncomp(segmentedMask);
-        stats   = regionprops(ccCore,'Area','Perimeter');
-        areas   = [stats.Area];
-        perims  = [stats.Perimeter];
-        circ    = 4*pi*areas./(perims.^2 + eps);
-    
-        valid   = find(areas >= params.minArea);
-        if isempty(valid), valid = 1:numel(areas); end
-    
-        [~,loc]  = max(circ(valid));
-        coreIdx  = valid(loc);
-    
-        coreMask = false(size(segmentedMask));
-        coreMask(ccCore.PixelIdxList{coreIdx}) = true;
+        coreMask = locateTumor(segmentedMask, params.minArea);
         
 
         seDilate = strel('disk', 2);
@@ -84,17 +71,17 @@ for iteration = 1 : 1
     
         [sumD, meanD, hausD] = evaluateSegmentation(label, B);
         fprintf("L'immagine %d ha Directed Hausdorff %0.2f\n", idx, hausD)
-        sum = sum + hausD;
+        % sum = sum + hausD;
     end
 
-    if iteration == 1
-        bestParam = iteration;
-        bestSum = sum;
-        if sum < bestSum
-           bestParam = iteration;
-           bestSum = sum;
-        end
-    end
-end
-
-fprintf("migliore è %0.2f\n", bestParam)
+%     if iteration == 1
+%         bestParam = iteration;
+%         bestSum = sum;
+%         if sum < bestSum
+%            bestParam = iteration;
+%            bestSum = sum;
+%         end
+%     end
+% end
+% 
+% fprintf("migliore è %0.2f\n", bestParam)

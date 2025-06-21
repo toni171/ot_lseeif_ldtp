@@ -1,5 +1,5 @@
 function [imagesPath, labelsPath] = getPaths()
-    datasetPath = 'dataset/';
+    datasetPath = 'old_dataset/';
     imagesFolder = 'images/';
     labelsFolder = 'labels/';
     imagesPath = strcat(datasetPath, imagesFolder);
