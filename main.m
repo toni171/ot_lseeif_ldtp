@@ -11,11 +11,12 @@ params.minArea = 500;
 params.iteration = 20;
 params.numTiles = 8;
 
-% for iteration = 1 : 1
-%      fprintf("%0.2f\n", iteration)
-%      sum = 0;
+% for iteration = 20 
+%       fprintf("%0.2f\n", iteration)
+%       sum = 0;
 
-    for idx = 1 : 435
+    for idx = 1 : 9
+        
         [grayImage, label] = readImage(idx);
         
         % if idx == 1, showLabeledImage(grayImage, label); end
@@ -26,13 +27,13 @@ params.numTiles = 8;
     
         enhancedImage = clahe(cleanedImage, params.numTiles);
     
-        % if idx == 3, showLabeledImage(cleanedImage, label); end
+        % showLabeledImage(cleanedImage, label);
         
         binaryImage = otsuThresholding(enhancedImage);
 
         % binaryImage = bwareaopen(binaryImage, 10);
     
-        % if idx == 3, showLabeledImage(binaryImage, label); end
+        % showLabeledImage(binaryImage, label);
     
         % seErode = strel('disk', iteration);
         % binaryImage = ~binaryImage;
@@ -41,8 +42,9 @@ params.numTiles = 8;
         % if idx == 7, showLabeledImage(binaryImage, label); end
     
         segmentedMask = segmentImage(enhancedImage, binaryImage, params);
-    
-        % if idx == 1, showLabeledImage(segmentedMask, label); end
+   
+        % showLabeledImage(segmentedMask, label);
+
     
         segmentedMask = ~segmentedMask;
         segmentedMask = ~bwareaopen(segmentedMask, params.minArea);
@@ -67,7 +69,7 @@ params.numTiles = 8;
     
         [B, ~] = bwboundaries(finalMask, 'noholes');
     
-        % if idx == 1, showSegmentation(grayImage, label, B); end
+        showSegmentation(grayImage, label, B);
     
         [sumD, meanD, hausD] = evaluateSegmentation(label, B);
         fprintf("L'immagine %d ha Directed Hausdorff %0.2f\n", idx, hausD)
