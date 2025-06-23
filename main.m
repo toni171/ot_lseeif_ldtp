@@ -35,35 +35,15 @@ params.numTiles = 8;
     
         % showLabeledImage(binaryImage, label);
     
-        % seErode = strel('disk', iteration);
-        % binaryImage = ~binaryImage;
-        % binaryImage = imerode(binaryImage, seErode);
-        % binaryImage = ~binaryImage;
-        % if idx == 7, showLabeledImage(binaryImage, label); end
-    
         segmentedMask = segmentImage(enhancedImage, binaryImage, params);
    
         % showLabeledImage(segmentedMask, label);
 
-    
-        segmentedMask = ~segmentedMask;
-        segmentedMask = ~bwareaopen(segmentedMask, params.minArea);
-
-        segmentedMask = imfill(segmentedMask, 'holes');
-        
-
-        seErode = strel('disk', 2);
-        segmentedMask = imerode(segmentedMask, seErode);
-        
-    
+        segmentedMask = postProcessing(segmentedMask, params.minArea);
+            
         % if idx == 3, showLabeledImage(segmentedMask, label); end
     
-        coreMask = locateTumor(segmentedMask, params.minArea);
-        
-
-        seDilate = strel('disk', 2);
-        finalMask = imdilate(coreMask, seDilate);
-        
+        finalMask = locateTumor(segmentedMask, params.minArea);
     
         % if idx == 1, showLabeledImage(finalMask, label); end
     

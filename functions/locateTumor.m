@@ -1,4 +1,4 @@
-function coreMask = locateTumor(segmentedMask, minArea)
+function finalMask = locateTumor(segmentedMask, minArea)
     ccCore = bwconncomp(segmentedMask);
     stats   = regionprops(ccCore,'Area','Perimeter');
     areas   = [stats.Area];
@@ -13,4 +13,7 @@ function coreMask = locateTumor(segmentedMask, minArea)
 
     coreMask = false(size(segmentedMask));
     coreMask(ccCore.PixelIdxList{coreIdx}) = true;
+
+    seDilate = strel('disk', 2);
+    finalMask = imdilate(coreMask, seDilate);
 end
