@@ -8,16 +8,22 @@ function segmentedMask = segmentImage(enhancedImage, binaryImage, params)
 
     enhancedImage = im2double(enhancedImage);
 
+    T_ldtp = 10;  % threshold LDTP, può essere regolato empiricamente
+    ldtpMap = computeLDTP(enhancedImage, T_ldtp);
+    
+    % Normalizza la mappa per usarla nella funzione di energia
+    ldtpMap = double(ldtpMap);
+    ldtpMap = ldtpMap / max(ldtpMap(:));  % normalizzazione in [0,1]
+
     for iteration = 1:params.iteration
         H = 0.5 * (1 + (2 / pi) * atan(phi / params.epsilon));
 
         delta = (params.epsilon / pi) ./ (params.epsilon ^ 2 + phi .^ 2);
+        
+        cIn_tex = sum(ldtpMap(:) .* H(:)) / (sum(H(:)) + params.epsilon);
+        cOut_tex = sum(ldtpMap(:) .* (1 - H(:))) / (sum(1 - H(:)) + params.epsilon);
 
-        cIn = sum(enhancedImage(:) .* H(:)) / (sum(H(:)) + params.epsilon);
-
-        cOut = sum(enhancedImage(:) .* (1 - H(:))) / (sum(1 - H(:)) + params.epsilon);
-
-        dataForce = (enhancedImage - cIn).^2 - (enhancedImage - cOut).^2;
+        dataForce = (ldtpMap - cIn_tex).^2 - (ldtpMap - cOut_tex).^2;
 
         [phiX, phiY] = gradient(phi);
 
