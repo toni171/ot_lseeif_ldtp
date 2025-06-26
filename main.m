@@ -7,63 +7,11 @@ params.dt = 1;
 params.mu = 0.1;
 params.lambda = 1.5;
 params.alpha = 0;
-params.minArea = 500;
-params.iteration = 20;
+params.minArea = 150;
+params.iteration = 5;
 params.numTiles = 8;
+params.seRadius = 12;
 
-% for iteration = 20 
-%       fprintf("%0.2f\n", iteration)
-%       sum = 0;
-
-    for idx = 1 : 9
-        
-        [grayImage, label] = readImage(idx);
-        
-        % if idx == 1, showLabeledImage(grayImage, label); end
-    
-        cleanedImage = cleanImage(grayImage, params.threshold);
-    
-        % if idx == 1, showLabeledImage(cleanedImage, label); end
-    
-        enhancedImage = clahe(cleanedImage, params.numTiles);
-    
-        % showLabeledImage(cleanedImage, label);
-        
-        binaryImage = otsuThresholding(enhancedImage);
-
-        % binaryImage = bwareaopen(binaryImage, 10);
-    
-        % showLabeledImage(binaryImage, label);
-    
-        segmentedMask = segmentImage(enhancedImage, binaryImage, params);
-   
-        % showLabeledImage(segmentedMask, label);
-
-        segmentedMask = postProcessing(segmentedMask, params.minArea);
-            
-        % if idx == 3, showLabeledImage(segmentedMask, label); end
-    
-        finalMask = locateTumor(segmentedMask, params.minArea);
-    
-        % if idx == 1, showLabeledImage(finalMask, label); end
-    
-        [B, ~] = bwboundaries(finalMask, 'noholes');
-    
-        showSegmentation(grayImage, label, B);
-    
-        [sumD, meanD, hausD] = evaluateSegmentation(label, B);
-        fprintf("L'immagine %d ha Directed Hausdorff %0.2f\n", idx, hausD)
-        % sum = sum + hausD;
-    end
-
-%     if iteration == 1
-%         bestParam = iteration;
-%         bestSum = sum;
-%         if sum < bestSum
-%            bestParam = iteration;
-%            bestSum = sum;
-%         end
-%     end
-% end
-% 
-% fprintf("migliore è %0.2f\n", bestParam)
+for idx = 1 : 17 
+    hausD = otLseeifLdtp(idx, params);
+end

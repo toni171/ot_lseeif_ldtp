@@ -1,4 +1,8 @@
 function finalMask = locateTumor(segmentedMask, minArea)
+    
+    circMin    = 0.3;               % allow elongated shapes down to circ=0.3
+    
+
     ccCore = bwconncomp(segmentedMask);
     stats   = regionprops(ccCore,'Area','Perimeter');
     areas   = [stats.Area];
@@ -6,10 +10,17 @@ function finalMask = locateTumor(segmentedMask, minArea)
     circ    = 4*pi*areas./(perims.^2 + eps);
 
     valid   = find(areas >= minArea);
-    if isempty(valid), valid = 1:numel(areas); end
+    goodIdx    = valid(circ(valid) >= circMin);
 
-    [~,loc]  = max(circ(valid));
-    coreIdx  = valid(loc);
+    if isempty(goodIdx)
+        warning('No region passes circ ≥ %.2f; falling back to area-only', circMin);
+        [~,loc2] = max(areas(valid));
+        coreIdx  = valid(loc2);
+    else
+        % pick the largest area among the “good” ones
+        [~,loc2] = max(areas(goodIdx));
+        coreIdx  = goodIdx(loc2);
+    end
 
     coreMask = false(size(segmentedMask));
     coreMask(ccCore.PixelIdxList{coreIdx}) = true;
