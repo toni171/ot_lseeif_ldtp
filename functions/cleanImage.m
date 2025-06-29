@@ -1,22 +1,14 @@
 function cleanedImage = cleanImage(grayImage, threshold)
+% CLEANIMAGE    Perform a binary thresholding by a given threshold
+%   CLEANEDIMAGE = CLEANIMAGE(GRAYIMAGE, THRESHOLD) takes in input a
+%   grayscale image GRAYIMAGE and perform a binary thresholding by the
+%   parameter THRESHOLD. All pixels with intensity less than or equal to
+%   the threshold are set to 0 and CLEANEDIMAGE is returned.
 
     binaryMask = grayImage > threshold;
-    
-    % structElem = strel('disk', 3);
-    % binaryMask = imopen(binaryMask, structElem);
-    % 
-    % connectedComponents = bwconncomp(binaryMask);
-    % numPixels = cellfun(@numel, connectedComponents.PixelIdxList);
-    % [~, largestIdx] = max(numPixels);
-    % liverMask = false(size(binaryMask));
-    % liverMask(connectedComponents.PixelIdxList{largestIdx}) = true;
-    % 
-    % liverMask = imdilate(liverMask, strel('disk', 4));
-    % 
+
     cleanedImage = grayImage;
-    % cleanedImage(~liverMask) = 0;
 
     cleanedImage(~binaryMask) = 0;
 
 end
-

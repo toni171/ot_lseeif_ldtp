@@ -1,18 +1,21 @@
-function [] = showLabeledImage(grayImage, label)
+function [] = showLabeledImage(grayImage, labelPoints)
+% SHOWLABELEDIMAGE Shows an image and overlay to it the plot of label
+% points.
 
     figure;
     imshow(grayImage);      
     hold on;
 
-    if iscell(label)
-        label = cell2mat(cellfun(@cell2mat, label, 'UniformOutput', false));
+    if iscell(labelPoints)
+        labelPoints = cell2mat(cellfun(@cell2mat, labelPoints, 'UniformOutput', false));
     end
 
-    for i = 1:size(label, 1)
-        x = round(label(i, 1));
-        y = round(label(i, 2));
+    for i = 1:size(labelPoints, 1)
+        x = round(labelPoints(i, 1));
+        y = round(labelPoints(i, 2));
     
         plot(x, y, 'r+', 'MarkerSize', 10, 'LineWidth', 2);
     end
     title('Labeled Image');
+    hold off;
 end

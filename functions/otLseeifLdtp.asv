@@ -1,10 +1,10 @@
-function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
+function hausD = otLseeifLdtp(idx, params)
 % OTLSEEIFLDTP  Apply the whole algorith to the image.
 %   [SUMD, MEAND, HAUSD] = OTLSEEIFLDTP(IDX, PARAMS) takes in input the
 %   index IDX of the image and the parameters PARAMS and after it applies
 %   to the image the whole segmentation pipeline and gives in output the
 %   evaluation metrics. The parameters PARAMS.SHOWIMAGES and
-%   PARAMS.SHOWSEGMENTEDIMAGE controls the showed images.
+%   PARAMS.SHOWSEGMENTEDIMAGE
 
     %   Extract grayscale image and label border points.
     [grayImage, label] = readImage(idx);
@@ -71,5 +71,5 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
     end
     
     %   Compute the evaluation metrics
-    [sumD, meanD, hausD] = evaluateSegmentation(label, B);
+    [~, ~, hausD] = evaluateSegmentation(label, B);
 end

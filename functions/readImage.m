@@ -1,4 +1,5 @@
 function [grayImage, label] = readImage(idx)
+% READIMAGE Returns image and labels of the corresponding index.
 
     [imagesPath, labelsPath] = getPaths();
     

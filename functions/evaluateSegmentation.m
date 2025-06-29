@@ -1,29 +1,28 @@
-function [sumDist, meanDist, hausDist] = evaluateSegmentation(gtPoints, B)
-% evaluateSegmentation  Compute GT→segmentation boundary distances.
-%   gtPoints is an N×2 array of [x y] coordinates from your JSON.
-%   B       is the cell array output of bwboundaries: each B{k} is
-%           a M_k×2 array of [row, col] points.
-%
-% Outputs:
-%   sumDist  = sum of min-pointwise distances
-%   meanDist = mean of those distances
-%   hausDist = max   of those distances (directed Hausdorff)
+function [sumDist, meanDist, hausDist] = evaluateSegmentation( ...
+    labelPoints, segmentedPoints)
+% EVALUATESEGMENTATION  Compute label-segmentation boundary distances.
+%   [SUMDIST, MEANDIST, HAUSDIST] = EVALUATESEGMENTATION(LABELPOINTS,
+%   SEGMENTEDPOINTS) takes in input the true values of tumor boundary points
+%   LABELPOINTS and the segmented tumor boundary points SEGMENTEDPOINTS and
+%   returns the sum of min-pointwise distances SUMDIST, the mean of those
+%   distances MEANDIST and the max of those distances (directed Hausdorff)
+%   HAUSDIST
 
-    % 1) Stack all segmented boundary pixels into one big list
-    segBC = vertcat(B{:});              % [row col]
+    %   Stack all segmented boundary pixels into one big list
+    segmentedPoints = vertcat(segmentedPoints{:});
     
-    % 2) Convert to [x y] to match gtPoints
-    segXY = [segBC(:,2), segBC(:,1)];   % [x y]
-    gtXY  = gtPoints;                  % already [x y]
+    %   Convert to [x y] to match labelPoints
+    segmentedXY = [segmentedPoints(:,2), segmentedPoints(:,1)];
+    labelXY  = labelPoints;
     
-    % 3) Compute full GT×SEG distance matrix
-    D = pdist2(gtXY, segXY, 'euclidean');
+    %   Compute full label×segmentation distance matrix
+    distances = pdist2(labelXY, segmentedXY, 'euclidean');
     
-    % 4) For each GT point, find its nearest boundary pixel
-    minD = min(D, [], 2);   % N×1 vector
+    %   For each label point, find its nearest boundary pixel
+    minDistances = min(distances, [], 2);
     
-    % 5) Summaries
-    sumDist  = sum(minD);
-    meanDist = mean(minD);
-    hausDist = max(minD);
+    %   Compute metrics
+    sumDist  = sum(minDistances);
+    meanDist = mean(minDistances);
+    hausDist = max(minDistances);
 end
