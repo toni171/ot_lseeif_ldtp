@@ -20,6 +20,9 @@ params.circMin = 0.3;
 params.showImages = false;
 params.showSegmentedImage = true;
 
+% Set true to use the adaptive thresholding, otherwise it uses otsu
+params.otsu = false;
+
 for idx = 1 : 17
     [sumD, meanD, hausD] = otLseeifLdtp(idx, params);
     fprintf("L'immagine %d ha Directed Hausdorff %0.2f\n", idx, hausD)
