@@ -9,6 +9,7 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
     %   Extract grayscale image and label border points.
     [grayImage, label] = readImage(idx);
     
+    %-- Figure 1 
     if params.showImages
         showLabeledImage(grayImage, label);
     end
@@ -16,6 +17,7 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
     %   Apply binary thresholding
     cleanedImage = cleanImage(grayImage, params.threshold);
 
+    %-- Figure 2
     if params.showImages
         showLabeledImage(cleanedImage, label);
     end
@@ -23,16 +25,22 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
     %   Apply the Contrast Limited Adapted Histogram Equalization
     enhancedImage = clahe(cleanedImage, params.numTiles);
 
+    %-- Figure 3
     if params.showImages
         showLabeledImage(cleanedImage, label);
     end
     
-    %   Apply the Otsu Thresholding
-    binaryImage = otsuThresholding(enhancedImage);
+    %   Apply the adaptive Thresholding
+    if params.otsu
+        binaryImage = otsuThresholding(enhancedImage);
+    else
+        binaryImage = adaptiveThresholding(enhancedImage);
+    end
     
     %   Apply the pre-processing pipeline
     binaryImage = preProcessing(binaryImage);
 
+    %-- Figure 4
     if params.showImages
         showLabeledImage(binaryImage, label);
     end
@@ -40,6 +48,7 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
     %   Apply the Local Set-LDTP
     segmentedMask = segmentImage(enhancedImage, binaryImage, params);
 
+    %-- Figure 5
     if params.showImages
         showLabeledImage(segmentedMask, label);
     end
@@ -48,6 +57,7 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
     segmentedMask = postProcessing(segmentedMask, grayImage, ...
         params.maxAreaNoise, params.threshold);
         
+    %-- Figure 6
     if params.showImages
         showLabeledImage(segmentedMask, label);
     end
@@ -59,6 +69,7 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
     seDilate = strel('disk', params.seRadius);
     finalMask = imdilate(finalMask, seDilate);
 
+    %-- Figure 7
     if params.showImages
         showLabeledImage(finalMask, label);
     end
