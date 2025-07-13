@@ -11,7 +11,7 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
     
     %-- Figure 1 
     if params.showImages
-        showLabeledImage(grayImage, label);
+        showLabeledImage(grayImage, label, "Original Grayscale Image");
     end
 
     %   Apply binary thresholding
@@ -19,7 +19,9 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
 
     %-- Figure 2
     if params.showImages
-        showLabeledImage(cleanedImage, label);
+        showLabeledImage( ...
+            cleanedImage, label, ...
+            "Grayscale Image after Binary Thresholding");
     end
     
     %   Apply the Contrast Limited Adapted Histogram Equalization
@@ -27,7 +29,8 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
 
     %-- Figure 3
     if params.showImages
-        showLabeledImage(cleanedImage, label);
+        showLabeledImage( ...
+            cleanedImage, label, "Grascale Image Enhanced by CLAHE");
     end
     
     %   Apply the adaptive Thresholding
@@ -42,7 +45,12 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
 
     %-- Figure 4
     if params.showImages
-        showLabeledImage(binaryImage, label);
+        if params.otsu
+            title = "Binary Image after Otsu Thresholding";
+        else
+            title = "Binary Image after Adaptive Thresholding";
+        end
+        showLabeledImage(binaryImage, label, title);
     end
 
     %   Apply the Local Set-LDTP
@@ -50,16 +58,21 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
 
     %-- Figure 5
     if params.showImages
-        showLabeledImage(segmentedMask, label);
+        showLabeledImage( ...
+            segmentedMask, label, ...
+            "Binary Mask after Local Set Method with LDTP");
     end
     
     %   Apply the post-processing pipeline
-    segmentedMask = postProcessing(segmentedMask, grayImage, ...
-        params.maxAreaNoise, params.threshold);
+    segmentedMask = postProcessing( ...
+        segmentedMask, grayImage, params.maxAreaNoise, ...
+        params.threshold, params.preLocationErosionSize);
         
     %-- Figure 6
     if params.showImages
-        showLabeledImage(segmentedMask, label);
+        showLabeledImage( ...
+            segmentedMask, label, ...
+            "Binary Mask after Routines Pre-Tumor-Location");
     end
     
     %   Locate the tumor between the highlighted regions
@@ -71,7 +84,8 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
 
     %-- Figure 7
     if params.showImages
-        showLabeledImage(finalMask, label);
+        showLabeledImage( ...
+            finalMask, label, "Binary Mask of the Located Tumor");
     end
     
     %   Extract the boundary points

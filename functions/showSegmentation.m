@@ -23,6 +23,6 @@ function [] = showSegmentation(image, labelPoints, boundaryPoints)
         plot(boundary(:,2), boundary(:,1), 'g--', 'LineWidth', 2);
     end
     
-    title('Tumor outlined in green dashed line');
+    title("Segmented Tumor Outlined in Green Dashed Line");
     hold off;
 end

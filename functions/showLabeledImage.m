@@ -1,4 +1,4 @@
-function [] = showLabeledImage(grayImage, labelPoints)
+function [] = showLabeledImage(grayImage, labelPoints, titleText)
 % SHOWLABELEDIMAGE Shows an image and overlay to it the plot of label
 % points.
 
@@ -16,6 +16,6 @@ function [] = showLabeledImage(grayImage, labelPoints)
     
         plot(x, y, 'r+', 'MarkerSize', 10, 'LineWidth', 2);
     end
-    title('Labeled Image');
+    title(titleText);
     hold off;
 end
