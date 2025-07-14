@@ -1,9 +1,16 @@
 close all;
-clear, clc;
+%clear, clc;
 
 addpath('functions')
 
+% Set true to use the adaptive thresholding, otherwise it uses the Otsu
+% thresholding
+params.otsu = false;
+
+% Threshold for initial binary thresholding (background elimination)
 params.threshold = 15;
+% Number of tiles in which the image is divided for CLAHE
+params.numTiles = 8;    % 7 works well for some images
 params.sigma = 1;
 params.epsilon = 1;
 params.dt = 1;
@@ -13,7 +20,6 @@ params.alpha = 0;
 params.minArea = 50;
 params.maxAreaNoise = 10;
 params.iteration = 10;
-params.numTiles = 8;
 params.seRadius = 12;    % prev 14
 params.circMin = 0.3;
 params.preLocationErosionSize = 10;  % prev 10
@@ -24,9 +30,6 @@ params.showImages = false;
 % with highlighted the border segmented by the algorithm and the labeled
 % points of the border of the tumor
 params.showSegmentedImage = false;
-% Set true to use the adaptive thresholding, otherwise it uses the Otsu
-% thresholding
-params.otsu = false;
 
 for idx = 1 : 17
     [sumD, meanD, hausD] = otLseeifLdtp(idx, params);

@@ -8,7 +8,6 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
 
     %   Extract grayscale image and label border points.
     [grayImage, label] = readImage(idx);
-    
     %-- Figure 1 
     if params.showImages
         showLabeledImage(grayImage, label, "Original Grayscale Image");
@@ -16,7 +15,6 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
 
     %   Apply binary thresholding
     cleanedImage = cleanImage(grayImage, params.threshold);
-
     %-- Figure 2
     if params.showImages
         showLabeledImage( ...
@@ -26,7 +24,6 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
     
     %   Apply the Contrast Limited Adapted Histogram Equalization
     enhancedImage = clahe(cleanedImage, params.numTiles);
-
     %-- Figure 3
     if params.showImages
         showLabeledImage( ...
@@ -39,10 +36,8 @@ function [sumD, meanD, hausD] = otLseeifLdtp(idx, params)
     else
         binaryImage = adaptiveThresholding(enhancedImage);
     end
-    
     %   Apply the pre-processing pipeline
     binaryImage = preProcessing(binaryImage);
-
     %-- Figure 4
     if params.showImages
         if params.otsu

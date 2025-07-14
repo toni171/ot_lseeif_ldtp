@@ -4,9 +4,6 @@ function binaryImage = otsuThresholding(grayImage)
 %   image that has been previously processed (background has 0 intensity)
 %   and returns the result of Otsu thresholding. In the output image
 %   BINARYIMAGE the background has intensity 1.
-
     threshold = graythresh(grayImage);
-
     binaryImage = imbinarize(grayImage, threshold);
-    
 end

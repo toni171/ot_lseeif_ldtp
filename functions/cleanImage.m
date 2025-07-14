@@ -4,11 +4,7 @@ function cleanedImage = cleanImage(grayImage, threshold)
 %   grayscale image GRAYIMAGE and perform a binary thresholding by the
 %   parameter THRESHOLD. All pixels with intensity less than or equal to
 %   the threshold are set to 0 and CLEANEDIMAGE is returned.
-
     binaryMask = grayImage > threshold;
-
     cleanedImage = grayImage;
-
     cleanedImage(~binaryMask) = 0;
-
 end
